@@ -41,7 +41,9 @@ func GetExchange(from string , to string)(Result,error){
 		}
 		return response,nil
 	}
-	return response,errors.New("Value not found")
+	else{
+		return response,errors.New("Value not found")
+	}
 }
 
 func convertToInt(param Result, to string) int {
