@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"errors"
+	"fmt"
 )
 
 type Rates map[string]interface{}
@@ -16,7 +17,7 @@ type Result struct {
 	Date string `json:"date"`
 }
 
-func GetExchange(from string , to string)Result{
+func GetExchange(from string , to string)(Result,error){
 	var response Result
 	url:="https://api.exchangeratesapi.io/latest?base="+from+"&symbols="+to
 	resp, err := http.Get(url)
@@ -33,19 +34,17 @@ func GetExchange(from string , to string)Result{
 		if jsonErr != nil {
 			log.Fatal(jsonErr)
 		}
-		response.Rates[to],err=convertToInt(response, to)
+		response.Rates[to]=convertToInt(response, to)
 		if err!=nil{
-			log.Fatal(err)
+			fmt.Println(err)
+			return response,err
 		}
-		return response
+		return response,nil
 	}
-	return response
+	return response,errors.New("Value not found")
 }
 
-func convertToInt(param Result, to string) (int,error) {
-	if param.Rates[to]==0{
-		return 0,errors.New("Value not found")
-	}
+func convertToInt(param Result, to string) int {
 	param.Rates[to]=int(param.Rates[to].(float64))
-	return param.Rates[to].(int),nil
+	return param.Rates[to].(int)
 }
