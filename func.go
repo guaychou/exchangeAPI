@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type Rates map[string]interface{}
@@ -19,6 +20,8 @@ type Result struct {
 
 func GetExchange(from string , to string)(Result,error){
 	var response Result
+	from=strings.ToUpper(from)
+	to=strings.ToUpper(to)
 	url:="https://api.exchangeratesapi.io/latest?base="+from+"&symbols="+to
 	resp, err := http.Get(url)
 	if err != nil {
@@ -41,9 +44,7 @@ func GetExchange(from string , to string)(Result,error){
 		}
 		return response,nil
 	}
-	else{
-		return response,errors.New("Value not found")
-	}
+	return response,errors.New("Value not found")
 }
 
 func convertToInt(param Result, to string) int {
